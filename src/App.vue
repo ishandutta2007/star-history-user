@@ -13,7 +13,7 @@ const loading = ref(false);
 const error = ref(null);
 const message = ref('');
 const topRepos = ref([]); // New ref to store top repositories
-const N_repo = 50;
+const N_repo = 10; // Set to 10 for top 10 repos
 
 const headers = {
   'Authorization': `token ${GITHUB_TOKEN}`,
@@ -62,7 +62,7 @@ const getStarHistory = async () => {
       if (repos.message) throw new Error(repos.message);
       allRepos = allRepos.concat(repos);
       page++;
-      //(Not working) await sleep(15000); // Delay after fetching repositories
+      await sleep(15000); // Delay after fetching repositories
     } while (repos.length === 100);
 
     allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
@@ -88,7 +88,7 @@ const getStarHistory = async () => {
         if (stars.message) throw new Error(stars.message);
         allStars = allStars.concat(stars);
         starsPage++;
-        //(Not working) await sleep(15000); // Delay after fetching stargazers
+        await sleep(15000); // Delay after fetching stargazers
       } while (stars.length === 100);
     }
 
@@ -137,7 +137,7 @@ const getStarHistory = async () => {
 <style scoped>
 #app {
   display: flex; /* Use flexbox for layout */
-  max-width: 100%; /* Adjust as needed */
+  /* Remove max-width: 100%; */
   margin: 0 auto;
   font-family: sans-serif;
   text-align: center;
@@ -146,7 +146,8 @@ const getStarHistory = async () => {
 .main-content {
   flex-grow: 1; /* Allows main content to take available space */
   padding: 2rem;
-  max-width: calc(100% - 250px); /* Adjust for panel width */
+  /* Remove max-width: calc(100% - 250px); */
+  margin-right: 250px; /* Leave space for the fixed panel */
 }
 
 input {
