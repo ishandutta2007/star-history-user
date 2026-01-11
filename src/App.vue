@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { GITHUB_TOKEN } from './github_token.js';
+import RepoListPanel from './components/RepoListPanel.vue'; // Import the new component
 
 Chart.register(...registerables);
 
@@ -11,6 +12,7 @@ let chartInstance = null;
 const loading = ref(false);
 const error = ref(null);
 const message = ref('');
+const topRepos = ref([]); // New ref to store top repositories
 
 const headers = {
   'Authorization': `token ${GITHUB_TOKEN}`,
@@ -44,6 +46,7 @@ const getStarHistory = async () => {
   loading.value = true;
   error.value = null;
   message.value = `Fetching repositories for user=${username.value}...`;
+  topRepos.value = []; // Clear previous repos
 
   try {
     let allRepos = [];
@@ -58,16 +61,17 @@ const getStarHistory = async () => {
       if (repos.message) throw new Error(repos.message);
       allRepos = allRepos.concat(repos);
       page++;
-      //await sleep(15000); // Delay after fetching repositories
+      await sleep(15000); // Delay after fetching repositories
     } while (repos.length === 100);
 
     allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
-    const topRepos = allRepos.slice(0, 50);
+    const slicedTopRepos = allRepos.slice(0, 10); // Take top 10 repos
+    topRepos.value = slicedTopRepos; // Populate the ref
 
     let allStars = [];
     let repoctr = 0;
-    let newrepolen = topRepos.length;
-    for (const repo of topRepos) {
+    let newrepolen = slicedTopRepos.length;
+    for (const repo of slicedTopRepos) {
       repoctr++;
       message.value = `Fetching stars for ${username.value}/${repo.name} [${repoctr}/${newrepolen}] ...`;
       let starsPage = 1;
@@ -83,7 +87,7 @@ const getStarHistory = async () => {
         if (stars.message) throw new Error(stars.message);
         allStars = allStars.concat(stars);
         starsPage++;
-        //await sleep(15000); // Delay after fetching stargazers
+        await sleep(15000); // Delay after fetching stargazers
       } while (stars.length === 100);
     }
 
@@ -115,24 +119,33 @@ const getStarHistory = async () => {
 
 <template>
   <div id="app">
-    <h1>GitHub User Star History</h1>
-    <form @submit.prevent="getStarHistory">
-      <input type="text" v-model="username" placeholder="Enter a GitHub username" />
-      <button type="submit" :disabled="loading">{{ loading ? 'Loading...' : 'Generate Chart' }}</button>
-    </form>
-    <div v-if="error" class="error">{{ error }}</div>
-    <div v-if="message">{{ message }}</div>
-    <canvas ref="chartCanvas"></canvas>
+    <div class="main-content">
+      <h1>GitHub User Star History</h1>
+      <form @submit.prevent="getStarHistory">
+        <input type="text" v-model="username" placeholder="Enter a GitHub username" />
+        <button type="submit" :disabled="loading">{{ loading ? 'Loading...' : 'Generate Chart' }}</button>
+      </form>
+      <div v-if="error" class="error">{{ error }}</div>
+      <div v-if="message">{{ message }}</div>
+      <canvas ref="chartCanvas"></canvas>
+    </div>
+    <RepoListPanel :repos="topRepos" />
   </div>
 </template>
 
 <style scoped>
 #app {
-  max-width: 800px;
+  display: flex; /* Use flexbox for layout */
+  max-width: 100%; /* Adjust as needed */
   margin: 0 auto;
-  padding: 2rem;
   font-family: sans-serif;
   text-align: center;
+}
+
+.main-content {
+  flex-grow: 1; /* Allows main content to take available space */
+  padding: 2rem;
+  max-width: calc(100% - 250px); /* Adjust for panel width */
 }
 
 input {
