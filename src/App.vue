@@ -13,6 +13,7 @@ const loading = ref(false);
 const error = ref(null);
 const message = ref('');
 const topRepos = ref([]); // New ref to store top repositories
+const N_repo = 50;
 
 const headers = {
   'Authorization': `token ${GITHUB_TOKEN}`,
@@ -61,11 +62,11 @@ const getStarHistory = async () => {
       if (repos.message) throw new Error(repos.message);
       allRepos = allRepos.concat(repos);
       page++;
-      await sleep(15000); // Delay after fetching repositories
+      //(Not working) await sleep(15000); // Delay after fetching repositories
     } while (repos.length === 100);
 
     allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
-    const slicedTopRepos = allRepos.slice(0, 10); // Take top 10 repos
+    const slicedTopRepos = allRepos.slice(0, N_repo); // Take top N_repo repos
     topRepos.value = slicedTopRepos; // Populate the ref
 
     let allStars = [];
@@ -73,7 +74,7 @@ const getStarHistory = async () => {
     let newrepolen = slicedTopRepos.length;
     for (const repo of slicedTopRepos) {
       repoctr++;
-      message.value = `Fetching stars for ${username.value}/${repo.name} [${repoctr}/${newrepolen}] ...`;
+      message.value = `Fetching stars history for ${username.value}/${repo.name} [${repoctr}/${newrepolen}] ...`;
       let starsPage = 1;
       let stars;
       do {
@@ -87,7 +88,7 @@ const getStarHistory = async () => {
         if (stars.message) throw new Error(stars.message);
         allStars = allStars.concat(stars);
         starsPage++;
-        await sleep(15000); // Delay after fetching stargazers
+        //(Not working) await sleep(15000); // Delay after fetching stargazers
       } while (stars.length === 100);
     }
 
