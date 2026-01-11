@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { Chart, registerables } from 'chart.js';
+import { GITHUB_TOKEN } from './github_token.js';
 
 Chart.register(...registerables);
 
@@ -10,6 +11,10 @@ let chartInstance = null;
 const loading = ref(false);
 const error = ref(null);
 const message = ref('');
+
+const headers = {
+  'Authorization': `token ${GITHUB_TOKEN}`,
+};
 
 onMounted(() => {
   const ctx = chartCanvas.value.getContext('2d');
@@ -43,8 +48,11 @@ const getStarHistory = async () => {
     let page = 1;
     let repos;
     do {
-      const res = await fetch(`https://api.github.com/users/${username.value}/repos?page=${page}&per_page=100`);
+      const res = await fetch(`https://api.github.com/users/${username.value}/repos?page=${page}&per_page=100`, { headers });
       repos = await res.json();
+      if (repos.message && repos.message.includes('API rate limit exceeded')) {
+        throw new Error(repos.message);
+      }
       if (repos.message) throw new Error(repos.message);
       allRepos = allRepos.concat(repos);
       page++;
@@ -60,9 +68,12 @@ const getStarHistory = async () => {
       let stars;
       do {
         const res = await fetch(`${repo.stargazers_url}?page=${starsPage}&per_page=100`, {
-          headers: { 'Accept': 'application/vnd.github.v3.star+json' }
+          headers: { ...headers, 'Accept': 'application/vnd.github.v3.star+json' }
         });
         stars = await res.json();
+        if (stars.message && stars.message.includes('API rate limit exceeded')) {
+          throw new Error(stars.message);
+        }
         if (stars.message) throw new Error(stars.message);
         allStars = allStars.concat(stars);
         starsPage++;
