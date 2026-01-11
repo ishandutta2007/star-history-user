@@ -1,3 +1,1 @@
-// Please add your GitHub personal access token here
-// and make sure this file is in your .gitignore
-export const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN';
+export const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
