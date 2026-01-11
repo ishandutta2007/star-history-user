@@ -1,6 +1,6 @@
 <template>
   <div class="repo-list-panel">
-    <h3>Top 10 Repositories by Stars</h3>
+    <h3>Top {{ repos.length }} Repositories by Stars</h3>
     <ul v-if="repos.length">
       <li v-for="repo in repos" :key="repo.id">
         <a :href="repo.html_url" target="_blank">{{ repo.name }}</a>: {{ repo.stargazers_count }} ⭐
