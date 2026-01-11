@@ -41,7 +41,7 @@ const getStarHistory = async () => {
 
   loading.value = true;
   error.value = null;
-  message.value = 'Fetching user repositories...';
+  message.value = `Fetching repositories for user=${username.value}...`;
 
   try {
     let allRepos = [];
@@ -62,8 +62,11 @@ const getStarHistory = async () => {
     const topRepos = allRepos.slice(0, 10);
 
     let allStars = [];
+    let repoctr = 0;
+    let newrepolen = topRepos.length;
     for (const repo of topRepos) {
-      message.value = `Fetching stars for ${repo.name}...`;
+      repoctr++;
+      message.value = `Fetching stars for ${username.value}/${repo.name} [${repoctr}/${newrepolen}] ...`;
       let starsPage = 1;
       let stars;
       do {
