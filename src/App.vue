@@ -72,7 +72,6 @@ const getStarHistory = async () => {
   try {
     let allRepos = [];
     const repoListCacheKey = generateCacheKey('repos', username.value);
-    // Temporarily reduce maxAgeDays for quick testing of cache invalidation (e.g., 0.001 days = ~1.5 minutes)
     let cachedAllRepos = getCache(repoListCacheKey, 15);
 
     if (cachedAllRepos) {
@@ -109,7 +108,6 @@ const getStarHistory = async () => {
     for (const repo of slicedTopRepos) {
       repoctr++;
       const stargazerCacheKey = generateCacheKey('stargazers', repo.full_name);
-      // Temporarily reduce maxAgeDays for quick testing of cache invalidation
       let cachedRepoStars = getCache(stargazerCacheKey, 15);
 
       if (cachedRepoStars) {
