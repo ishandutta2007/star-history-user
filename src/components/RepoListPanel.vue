@@ -78,7 +78,7 @@ const togglePanel = () => {
   border-left: none;
   padding: 5px 10px;
   cursor: pointer;
-  border-radius: 5px 0 0 5px;
+  border-radius: 15px 0 0 15px;
   z-index: 1001; /* Ensure button is above panel */
 }
 
