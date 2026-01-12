@@ -78,7 +78,7 @@ const getStarHistory = async () => {
     if (cachedAllRepos) {
       allRepos = cachedAllRepos;
       message.value = 'Repositories loaded from cache.';
-      console.log('Repositories loaded from cache:', allRepos);
+      console.log('${allRepos.length} Repositories loaded from cache:', allRepos);
     } else {
       message.value = `Fetching repositories for user=${username.value} via API...`;
       console.log('Fetching repositories via API...');
@@ -95,7 +95,7 @@ const getStarHistory = async () => {
         page++;
       } while (repos.length === N_repos_per_page);
       saveCache(repoListCacheKey, allRepos);
-      console.log('Repositories saved to cache.');
+      console.log(`Top ${repos.length} Repositories of ${username.value} saved to cache.`);
     }
 
     allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
