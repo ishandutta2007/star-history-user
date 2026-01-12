@@ -14,7 +14,7 @@ const loading = ref(false);
 const error = ref(null);
 const message = ref('');
 const topRepos = ref([]); // New ref to store top repositories
-const N_repo = 10; // Set to 10 for top 10 repos
+const N_repo = 100;
 const isPanelOpen = ref(true); // Track panel open state
 
 const headers = {
@@ -78,8 +78,7 @@ const getStarHistory = async () => {
         if (repos.message) throw new Error(repos.message);
         allRepos = allRepos.concat(repos);
         page++;
-        await sleep(15000); // Delay after fetching repositories
-      } while (repos.length === 100);
+              } while (repos.length === 100);
       saveCache(repoListCacheKey, allRepos);
       console.log('Repositories saved to cache.');
     }
@@ -119,8 +118,7 @@ const getStarHistory = async () => {
           if (stars.message) throw new Error(stars.message);
           starsForThisRepo = starsForThisRepo.concat(stars);
           starsPage++;
-          await sleep(15000); // Delay after fetching stargazers
-        } while (stars.length === 100);
+                  } while (stars.length === 100);
         saveCache(stargazerCacheKey, starsForThisRepo);
         allStars = allStars.concat(starsForThisRepo);
         console.log(`Stars for ${repo.name} saved to cache.`);
