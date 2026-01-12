@@ -91,7 +91,7 @@ const getStarHistory = async () => {
         if (repos.message) throw new Error(repos.message);
         allRepos = allRepos.concat(repos);
         page++;
-              } while (repos.length === 100);
+      } while (repos.length === 100);
       saveCache(repoListCacheKey, allRepos);
       console.log('Repositories saved to cache.');
     }
@@ -135,7 +135,7 @@ const getStarHistory = async () => {
           if (stars.message) throw new Error(stars.message);
           starsForThisRepo = starsForThisRepo.concat(stars);
           starsPage++;
-                  } while (stars.length === 100);
+        } while (stars.length === 100);
         saveCache(stargazerCacheKey, starsForThisRepo);
         allStars = allStars.concat(starsForThisRepo);
         console.log(`Stars for ${repo.name} saved to cache.`);
