@@ -5,6 +5,7 @@
     </button>
     <div v-if="isOpen" class="panel-content">
       <h3>Top {{ repos.length }} Repositories by Stars</h3>
+<h4>Top Stars({{ repos.length }} repo) = {{ repos.reduce((sum, repo) => sum + repo.stargazers_count, 0) }} </h4>
       <ul v-if="repos.length">
         <li v-for="repo in repos" :key="repo.id">
           <a :href="repo.html_url" target="_blank">{{ repo.name }}</a>: {{ repo.stargazers_count }} ⭐
