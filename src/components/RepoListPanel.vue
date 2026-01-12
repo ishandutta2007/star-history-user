@@ -52,16 +52,13 @@ const togglePanel = () => {
   width: 250px;
   background-color: #f8f8f8;
   border-left: 1px solid #eee;
-  padding: 20px;
   box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-  overflow: visible;
-  z-index: 1000;
+  overflow-x: visible;
   transition: width 0.3s ease; /* Smooth transition for width changes */
   z-index: 1002;
 }
 
 .repo-list-panel.collapsed {
-  overflow: visible;
   width: 40px; /* Collapsed width, just enough for the button */
   padding: 0;
   overflow: visible;
@@ -86,6 +83,8 @@ const togglePanel = () => {
 
 .panel-content {
   padding: 20px; /* Ensure content padding when open */
+  overflow-y: auto;
+  height: 100%;
 }
 
 .repo-list-panel h3 {
