@@ -76,6 +76,8 @@ const togglePanel = () => {
   border-top: none;
   border-bottom: none;
   border-right: none;
+  border-left: 1px solid #eee;
+  box-shadow: -2px 0 0 rgba(0, 0, 0, 0.1);
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 15px 0 0 15px;
