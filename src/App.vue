@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { GITHUB_TOKEN } from './github_token.js';
 import RepoListPanel from './components/RepoListPanel.vue'; // Import the new component
@@ -14,12 +14,17 @@ const error = ref(null);
 const message = ref('');
 const topRepos = ref([]); // New ref to store top repositories
 const N_repo = 10; // Set to 10 for top 10 repos
+const isPanelOpen = ref(true); // Track panel open state
 
 const headers = {
   'Authorization': `token ${GITHUB_TOKEN}`,
 };
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const mainContentMarginRight = computed(() => {
+  return isPanelOpen.value ? '250px' : '50px'; // Panel width: 250px open, 50px collapsed
+});
 
 onMounted(() => {
   const ctx = chartCanvas.value.getContext('2d');
@@ -120,7 +125,7 @@ const getStarHistory = async () => {
 
 <template>
   <div id="app">
-    <div class="main-content">
+    <div class="main-content" :style="{ 'margin-right': mainContentMarginRight }">
       <h1>GitHub User Star History</h1>
       <form @submit.prevent="getStarHistory">
         <input type="text" v-model="username" placeholder="Enter a GitHub username" />
@@ -130,7 +135,7 @@ const getStarHistory = async () => {
       <div v-if="message">{{ message }}</div>
       <canvas ref="chartCanvas"></canvas>
     </div>
-    <RepoListPanel :repos="topRepos" />
+    <RepoListPanel :repos="topRepos" v-model:isOpen="isPanelOpen" />
   </div>
 </template>
 
@@ -146,8 +151,8 @@ const getStarHistory = async () => {
 .main-content {
   flex-grow: 1; /* Allows main content to take available space */
   padding: 2rem;
-  /* Remove max-width: calc(100% - 250px); */
-  margin-right: 250px; /* Leave space for the fixed panel */
+  /* margin-right is now dynamic */
+  transition: margin-right 0.3s ease; /* Smooth transition for margin changes */
 }
 
 input {
