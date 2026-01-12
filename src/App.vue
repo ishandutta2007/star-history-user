@@ -79,8 +79,8 @@ const getStarHistory = async () => {
       message.value = 'Repositories loaded from cache.';
       console.log('${allRepos.length} Repositories loaded from cache:', allRepos);
     } else {
-      message.value = `Fetching repositories for user=${username.value} via API...`;
-      console.log('Fetching repositories via API...');
+      message.value = `Fetching Repositories for user=${username.value} via API...`;
+      console.log('Fetching Repositories via API...');
       let page = 1;
       let repos;
       do {
