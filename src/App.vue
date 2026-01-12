@@ -15,6 +15,8 @@ const error = ref(null);
 const message = ref('');
 const topRepos = ref([]); // New ref to store top repositories
 const N_repo = 100;
+const N_repos_per_page = 100;
+const N_stargazers_per_page = 100;
 const isPanelOpen = ref(true); // Track panel open state
 
 // Load username from localStorage
@@ -83,7 +85,7 @@ const getStarHistory = async () => {
       let page = 1;
       let repos;
       do {
-        const res = await fetch(`https://api.github.com/users/${username.value}/repos?page=${page}&per_page=100`, { headers });
+        const res = await fetch(`https://api.github.com/users/${username.value}/repos?page=${page}&per_page=${N_repos_per_page}`, { headers });
         repos = await res.json();
         if (repos.message && repos.message.includes('API rate limit exceeded')) {
           throw new Error(repos.message);
@@ -91,7 +93,7 @@ const getStarHistory = async () => {
         if (repos.message) throw new Error(repos.message);
         allRepos = allRepos.concat(repos);
         page++;
-      } while (repos.length === 100);
+      } while (repos.length === N_repos_per_page);
       saveCache(repoListCacheKey, allRepos);
       console.log('Repositories saved to cache.');
     }
@@ -120,11 +122,11 @@ const getStarHistory = async () => {
         let starsForThisRepo = [];
         let starsPage = 1;
         let stars;
-        let totalNoOfPagesOfRepo = Math.ceil(repo.stargazers_count / 100); // Calculate total pages based on stargazers_count
+        let totalNoOfPagesOfRepo = Math.ceil(repo.stargazers_count / N_stargazers_per_page); // Calculate total pages based on stargazers_count
 
         do {
             message.value = `Fetching stars history for ${username.value}/${repo.name} via API [repo=${repoctr}/${newrepolen}][page=${starsPage}${totalNoOfPagesOfRepo > 1 ? '/' + totalNoOfPagesOfRepo : ''}] ...`;
-            const res = await fetch(`${repo.stargazers_url}?page=${starsPage}&per_page=100`, {
+            const res = await fetch(`${repo.stargazers_url}?page=${starsPage}&per_page=${N_stargazers_per_page}`, {
                 headers: { ...headers, 'Accept': 'application/vnd.github.v3.star+json' }
             });
 
@@ -135,7 +137,7 @@ const getStarHistory = async () => {
           if (stars.message) throw new Error(stars.message);
           starsForThisRepo = starsForThisRepo.concat(stars);
           starsPage++;
-        } while (stars.length === 100);
+        } while (stars.length === N_stargazers_per_page);
         saveCache(stargazerCacheKey, starsForThisRepo);
         allStars = allStars.concat(starsForThisRepo);
         console.log(`Stars for ${repo.name} saved to cache.`);
