@@ -75,7 +75,9 @@ const togglePanel = () => {
   transform: translateY(-50%);
   background-color: #f8f8f8;
   border: 1px solid #eee;
-  border-left: none;
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 15px 0 0 15px;
