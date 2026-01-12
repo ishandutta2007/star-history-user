@@ -120,11 +120,14 @@ const getStarHistory = async () => {
         let starsForThisRepo = [];
         let starsPage = 1;
         let stars;
+        let totalNoOfPagesOfRepo = Math.ceil(repo.stargazers_count / 100); // Calculate total pages based on stargazers_count
+
         do {
-        message.value = `Fetching stars history for ${username.value}/${repo.name} via API [repo=${repoctr}/${newrepolen}][page=${starsPage}] ...`;
-          const res = await fetch(`${repo.stargazers_url}?page=${starsPage}&per_page=100`, {
-            headers: { ...headers, 'Accept': 'application/vnd.github.v3.star+json' }
-          });
+            message.value = `Fetching stars history for ${username.value}/${repo.name} via API [repo=${repoctr}/${newrepolen}][page=${starsPage}${totalNoOfPagesOfRepo > 1 ? '/' + totalNoOfPagesOfRepo : ''}] ...`;
+            const res = await fetch(`${repo.stargazers_url}?page=${starsPage}&per_page=100`, {
+                headers: { ...headers, 'Accept': 'application/vnd.github.v3.star+json' }
+            });
+
           stars = await res.json();
           if (stars.message && stars.message.includes('API rate limit exceeded')) {
             throw new Error(stars.message);
