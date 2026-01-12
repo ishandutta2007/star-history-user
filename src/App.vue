@@ -71,7 +71,7 @@ const getStarHistory = async () => {
     let allRepos = [];
     const repoListCacheKey = generateCacheKey('repos', username.value);
     // Temporarily reduce maxAgeDays for quick testing of cache invalidation (e.g., 0.001 days = ~1.5 minutes)
-    let cachedAllRepos = getCache(repoListCacheKey, 0.001); 
+    let cachedAllRepos = getCache(repoListCacheKey, 1); 
 
     if (cachedAllRepos) {
       allRepos = cachedAllRepos;
@@ -108,7 +108,7 @@ const getStarHistory = async () => {
       repoctr++;
       const stargazerCacheKey = generateCacheKey('stargazers', repo.full_name);
       // Temporarily reduce maxAgeDays for quick testing of cache invalidation
-      let cachedRepoStars = getCache(stargazerCacheKey, 0.001); 
+      let cachedRepoStars = getCache(stargazerCacheKey, 1); 
 
       if (cachedRepoStars) {
         allStars = allStars.concat(cachedRepoStars);
@@ -121,6 +121,7 @@ const getStarHistory = async () => {
         let starsPage = 1;
         let stars;
         do {
+        message.value = `Fetching stars history for ${username.value}/${repo.name} via API [repo=${repoctr}/${newrepolen}][page=${starsPage}] ...`;
           const res = await fetch(`${repo.stargazers_url}?page=${starsPage}&per_page=100`, {
             headers: { ...headers, 'Accept': 'application/vnd.github.v3.star+json' }
           });
