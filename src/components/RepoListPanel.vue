@@ -90,6 +90,12 @@ const togglePanel = () => {
 
 .repo-list-panel h3 {
   margin-top: 0;
+  margin-bottom: 0;
+  color: #333;
+}
+
+.repo-list-panel h3,.repo-list-panel h4 {
+  margin-top: 0;
   color: #333;
 }
 
