@@ -67,11 +67,12 @@ const togglePanel = () => {
 
 .toggle-button {
   position: absolute;
-  left: -20px; /* Position button outside the panel */
+  font-size: 20px;
+  left: 0;//-20px; /* Position button outside the panel */
   top: 50%;
   transform: translateY(-50%);
-  background-color: #007bff;
-  color: white;
+  //background-color: #007bff;
+  color: black;
   border: none;
   padding: 5px 10px;
   cursor: pointer;
