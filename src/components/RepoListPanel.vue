@@ -1,7 +1,7 @@
 <template>
   <div :class="['repo-list-panel', { 'collapsed': !isOpen }]">
     <button class="toggle-button" @click="togglePanel">
-      {{ isOpen ? '↔' : '→' }}
+      {{ isOpen ? '→' : '↔' }}
     </button>
     <div v-if="isOpen" class="panel-content">
       <h3>Top {{ repos.length }} Repositories by Stars</h3>
@@ -54,13 +54,14 @@ const togglePanel = () => {
   border-left: 1px solid #eee;
   padding: 20px;
   box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-  overflow-y: auto;
+  overflow: visible;
   z-index: 1000;
   transition: width 0.3s ease; /* Smooth transition for width changes */
   z-index: 1002;
 }
 
 .repo-list-panel.collapsed {
+  overflow: visible;
   width: 40px; /* Collapsed width, just enough for the button */
   padding: 0;
 }
