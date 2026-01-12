@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { GITHUB_TOKEN } from './github_token.js';
 import RepoListPanel from './components/RepoListPanel.vue'; // Import the new component
@@ -16,6 +16,19 @@ const message = ref('');
 const topRepos = ref([]); // New ref to store top repositories
 const N_repo = 100;
 const isPanelOpen = ref(true); // Track panel open state
+
+// Load username from localStorage
+onMounted(() => {
+  const savedUsername = localStorage.getItem('github_username');
+  if (savedUsername) {
+    username.value = savedUsername;
+  }
+});
+
+// Watch for changes in username and save to localStorage
+watch(username, (newUsername) => {
+  localStorage.setItem('github_username', newUsername);
+});
 
 const headers = {
   'Authorization': `token ${GITHUB_TOKEN}`,
