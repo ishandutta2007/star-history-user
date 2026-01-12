@@ -201,12 +201,43 @@ const getStarHistory = async () => {
 }
 
 input {
-  padding: 0.5rem;
+  padding: 0.75rem 1rem; /* Slightly more padding */
   margin-right: 0.5rem;
+  border: 1px solid #ccc; /* Add a subtle border */
+  border-radius: 8px; /* Rounded corners */
+  font-size: 1rem; /* Consistent font size */
+  transition: all 0.2s ease-in-out; /* Smooth transitions */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+
+input:focus {
+  border-color: #007bff; /* Highlight border on focus */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Focus ring */
+  outline: none; /* Remove default outline */
 }
 
 button {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem; /* More padding for a larger button */
+  background-color: #007bff; /* Blue background */
+  color: white; /* White text */
+  border: none; /* No border */
+  border-radius: 8px; /* Rounded corners */
+  font-size: 1rem; /* Consistent font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: all 0.2s ease-in-out; /* Smooth transitions */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+button:hover:not(:disabled) {
+  background-color: #0056b3; /* Darker blue on hover */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Slightly larger shadow on hover */
+  transform: translateY(-1px); /* Slight lift effect */
+}
+
+button:disabled {
+  background-color: #cccccc; /* Grey background when disabled */
+  cursor: not-allowed; /* Not-allowed cursor */
+  box-shadow: none;
 }
 
 canvas {
