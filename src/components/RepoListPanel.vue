@@ -57,23 +57,23 @@ const togglePanel = () => {
   overflow-y: auto;
   z-index: 1000;
   transition: width 0.3s ease; /* Smooth transition for width changes */
+  z-index: 1002;
 }
 
 .repo-list-panel.collapsed {
-  width: 50px; /* Collapsed width, just enough for the button */
+  width: 40px; /* Collapsed width, just enough for the button */
   padding: 0;
-  overflow-x: hidden; /* Hide content when collapsed */
 }
 
 .toggle-button {
   position: absolute;
   font-size: 20px;
-  left: 0;//-20px; /* Position button outside the panel */
+  left: -20px; /*Position button outside the panel */
   top: 50%;
   transform: translateY(-50%);
-  //background-color: #007bff;
-  color: black;
-  border: none;
+  background-color: #f8f8f8;
+  border: 1px solid #eee;
+  border-left: none;
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 5px 0 0 5px;
