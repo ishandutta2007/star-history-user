@@ -67,7 +67,6 @@ const getStarHistory = async () => {
       if (repos.message) throw new Error(repos.message);
       allRepos = allRepos.concat(repos);
       page++;
-      await sleep(15000); // Delay after fetching repositories
     } while (repos.length === 100);
 
     allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
@@ -93,7 +92,6 @@ const getStarHistory = async () => {
         if (stars.message) throw new Error(stars.message);
         allStars = allStars.concat(stars);
         starsPage++;
-        await sleep(15000); // Delay after fetching stargazers
       } while (stars.length === 100);
     }
 
