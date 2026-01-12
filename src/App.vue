@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { GITHUB_TOKEN } from './github_token.js';
 import RepoListPanel from './components/RepoListPanel.vue'; // Import the new component
+import { generateCacheKey, getCache, saveCache } from './utils/cache'; // Import caching utilities
 
 Chart.register(...registerables);
 
@@ -51,23 +52,37 @@ const getStarHistory = async () => {
 
   loading.value = true;
   error.value = null;
-  message.value = `Fetching repositories for user=${username.value}...`;
   topRepos.value = []; // Clear previous repos
 
   try {
     let allRepos = [];
-    let page = 1;
-    let repos;
-    do {
-      const res = await fetch(`https://api.github.com/users/${username.value}/repos?page=${page}&per_page=100`, { headers });
-      repos = await res.json();
-      if (repos.message && repos.message.includes('API rate limit exceeded')) {
-        throw new Error(repos.message);
-      }
-      if (repos.message) throw new Error(repos.message);
-      allRepos = allRepos.concat(repos);
-      page++;
-    } while (repos.length === 100);
+    const repoListCacheKey = generateCacheKey('repos', username.value);
+    // Temporarily reduce maxAgeDays for quick testing of cache invalidation (e.g., 0.001 days = ~1.5 minutes)
+    let cachedAllRepos = getCache(repoListCacheKey, 0.001); 
+
+    if (cachedAllRepos) {
+      allRepos = cachedAllRepos;
+      message.value = 'Repositories loaded from cache.';
+      console.log('Repositories loaded from cache:', allRepos);
+    } else {
+      message.value = `Fetching repositories for user=${username.value} via API...`;
+      console.log('Fetching repositories via API...');
+      let page = 1;
+      let repos;
+      do {
+        const res = await fetch(`https://api.github.com/users/${username.value}/repos?page=${page}&per_page=100`, { headers });
+        repos = await res.json();
+        if (repos.message && repos.message.includes('API rate limit exceeded')) {
+          throw new Error(repos.message);
+        }
+        if (repos.message) throw new Error(repos.message);
+        allRepos = allRepos.concat(repos);
+        page++;
+        await sleep(15000); // Delay after fetching repositories
+      } while (repos.length === 100);
+      saveCache(repoListCacheKey, allRepos);
+      console.log('Repositories saved to cache.');
+    }
 
     allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
     const slicedTopRepos = allRepos.slice(0, N_repo); // Take top N_repo repos
@@ -76,23 +91,40 @@ const getStarHistory = async () => {
     let allStars = [];
     let repoctr = 0;
     let newrepolen = slicedTopRepos.length;
+
     for (const repo of slicedTopRepos) {
       repoctr++;
-      message.value = `Fetching stars history for ${username.value}/${repo.name} [${repoctr}/${newrepolen}] ...`;
-      let starsPage = 1;
-      let stars;
-      do {
-        const res = await fetch(`${repo.stargazers_url}?page=${starsPage}&per_page=100`, {
-          headers: { ...headers, 'Accept': 'application/vnd.github.v3.star+json' }
-        });
-        stars = await res.json();
-        if (stars.message && stars.message.includes('API rate limit exceeded')) {
-          throw new Error(stars.message);
-        }
-        if (stars.message) throw new Error(stars.message);
-        allStars = allStars.concat(stars);
-        starsPage++;
-      } while (stars.length === 100);
+      const stargazerCacheKey = generateCacheKey('stargazers', repo.full_name);
+      // Temporarily reduce maxAgeDays for quick testing of cache invalidation
+      let cachedRepoStars = getCache(stargazerCacheKey, 0.001); 
+
+      if (cachedRepoStars) {
+        allStars = allStars.concat(cachedRepoStars);
+        message.value = `Stars for ${username.value}/${repo.name} loaded from cache [${repoctr}/${newrepolen}] ...`;
+        console.log(`Stars for ${repo.name} loaded from cache.`);
+      } else {
+        message.value = `Fetching stars history for ${username.value}/${repo.name} via API [${repoctr}/${newrepolen}] ...`;
+        console.log(`Fetching stars for ${repo.name} via API.`);
+        let starsForThisRepo = [];
+        let starsPage = 1;
+        let stars;
+        do {
+          const res = await fetch(`${repo.stargazers_url}?page=${starsPage}&per_page=100`, {
+            headers: { ...headers, 'Accept': 'application/vnd.github.v3.star+json' }
+          });
+          stars = await res.json();
+          if (stars.message && stars.message.includes('API rate limit exceeded')) {
+            throw new Error(stars.message);
+          }
+          if (stars.message) throw new Error(stars.message);
+          starsForThisRepo = starsForThisRepo.concat(stars);
+          starsPage++;
+          await sleep(15000); // Delay after fetching stargazers
+        } while (stars.length === 100);
+        saveCache(stargazerCacheKey, starsForThisRepo);
+        allStars = allStars.concat(starsForThisRepo);
+        console.log(`Stars for ${repo.name} saved to cache.`);
+      }
     }
 
     allStars.sort((a, b) => new Date(a.starred_at) - new Date(b.starred_at));
