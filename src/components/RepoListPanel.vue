@@ -54,7 +54,7 @@ const togglePanel = () => {
   border-left: 1px solid #eee;
   padding: 20px;
   box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-  overflow-y: auto;
+  overflow: visible;
   z-index: 1000;
   transition: width 0.3s ease; /* Smooth transition for width changes */
   z-index: 1002;
@@ -63,6 +63,7 @@ const togglePanel = () => {
 .repo-list-panel.collapsed {
   width: 40px; /* Collapsed width, just enough for the button */
   padding: 0;
+  overflow: visible;
 }
 
 .toggle-button {
