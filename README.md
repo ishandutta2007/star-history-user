@@ -16,7 +16,7 @@ Ever wondered how a GitHub user's popularity has grown over time? This tool lets
 
 ## 🛠️ Usage
 
-1.  Go to the **[Live Demo](https://ishandutta2007.github.io/star-history-user/)**.
+1.  Go to the **[Live Demo](https://ishandutta2007.github.io/star-history-user/)**. [Local url](http://localhost:5173/star-history-user/)
 2.  Enter a GitHub username in the input field.
 3.  Click the "Generate Chart" button.
 4.  Voila! You have the star history of the user. ✨
