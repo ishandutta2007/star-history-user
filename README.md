@@ -1,3 +1,7 @@
+# 📸 Screenshot ⛶
+
+<img width="1596" height="781" alt="github_user_star_screenshot" src="https://github.com/user-attachments/assets/bc66b5a3-8420-4522-bed7-38641ba42aab" />
+
 # ✨ GitHub User Star History 🌟
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ishandutta2007/star-history-user&type=date&legend=top-left)](https://www.star-history.com/#ishandutta2007/star-history-user&type=date&legend=top-left)
