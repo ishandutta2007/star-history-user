@@ -13,7 +13,8 @@
 		"deploy": "gh-pages -d dist",
 		"biome": "biome",
 		"check": "biome check --write",
-		"format": "biome format --write"
+		"format": "biome format --write",
+		"all": "biome check --write"
 	},
 	"dependencies": {
 		"chart.js": "^4.5.1",
