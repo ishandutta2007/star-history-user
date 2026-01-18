@@ -1,6 +1,6 @@
 // src/utils/cache.js
 
-const CACHE_PREFIX = 'github_star_history_cache_';
+const CACHE_PREFIX = "github_star_history_cache_";
 
 /**
  * Generates a unique cache key for a given request.
@@ -10,11 +10,11 @@ const CACHE_PREFIX = 'github_star_history_cache_';
  * @returns {string} The unique cache key.
  */
 export function generateCacheKey(type, identifier, params = {}) {
-  const paramString = Object.keys(params)
-    .sort()
-    .map(key => `${key}=${params[key]}`)
-    .join('&');
-  return `${CACHE_PREFIX}${type}_${identifier}_${paramString}`;
+	const paramString = Object.keys(params)
+		.sort()
+		.map((key) => `${key}=${params[key]}`)
+		.join("&");
+	return `${CACHE_PREFIX}${type}_${identifier}_${paramString}`;
 }
 
 /**
@@ -23,15 +23,15 @@ export function generateCacheKey(type, identifier, params = {}) {
  * @param {any} data - The data to store.
  */
 export function saveCache(key, data) {
-  const cacheEntry = {
-    timestamp: Date.now(),
-    data: data,
-  };
-  try {
-    localStorage.setItem(key, JSON.stringify(cacheEntry));
-  } catch (e) {
-    console.error('Error saving to local storage:', e);
-  }
+	const cacheEntry = {
+		timestamp: Date.now(),
+		data: data,
+	};
+	try {
+		localStorage.setItem(key, JSON.stringify(cacheEntry));
+	} catch (e) {
+		console.error("Error saving to local storage:", e);
+	}
 }
 
 /**
@@ -41,29 +41,29 @@ export function saveCache(key, data) {
  * @returns {any | null} The cached data if fresh, otherwise null.
  */
 export function getCache(key, maxAgeDays) {
-  try {
-    const item = localStorage.getItem(key);
-    if (!item) {
-      return null;
-    }
+	try {
+		const item = localStorage.getItem(key);
+		if (!item) {
+			return null;
+		}
 
-    const cacheEntry = JSON.parse(item);
-    const ageMilliseconds = Date.now() - cacheEntry.timestamp;
-    const maxAgeMilliseconds = maxAgeDays * 24 * 60 * 60 * 1000;
+		const cacheEntry = JSON.parse(item);
+		const ageMilliseconds = Date.now() - cacheEntry.timestamp;
+		const maxAgeMilliseconds = maxAgeDays * 24 * 60 * 60 * 1000;
 
-    if (ageMilliseconds > maxAgeMilliseconds) {
-      // Cache is stale, remove it
-      localStorage.removeItem(key);
-      return null;
-    }
+		if (ageMilliseconds > maxAgeMilliseconds) {
+			// Cache is stale, remove it
+			localStorage.removeItem(key);
+			return null;
+		}
 
-    return cacheEntry.data;
-  } catch (e) {
-    console.error('Error retrieving from local storage:', e);
-    // If there's an error parsing, treat as no cache
-    localStorage.removeItem(key); // Clean up potentially corrupt entry
-    return null;
-  }
+		return cacheEntry.data;
+	} catch (e) {
+		console.error("Error retrieving from local storage:", e);
+		// If there's an error parsing, treat as no cache
+		localStorage.removeItem(key); // Clean up potentially corrupt entry
+		return null;
+	}
 }
 
 /**
@@ -71,25 +71,25 @@ export function getCache(key, maxAgeDays) {
  * @param {string} key - The cache key to clear.
  */
 export function clearCache(key) {
-  try {
-    localStorage.removeItem(key);
-  } catch (e) {
-    console.error('Error clearing cache:', e);
-  }
+	try {
+		localStorage.removeItem(key);
+	} catch (e) {
+		console.error("Error clearing cache:", e);
+	}
 }
 
 /**
  * Clears all cache entries managed by this utility.
  */
 export function clearAllCaches() {
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith(CACHE_PREFIX)) {
-        localStorage.removeItem(key);
-      }
-    }
-  } catch (e) {
-    console.error('Error clearing all caches:', e);
-  }
+	try {
+		for (let i = 0; i < localStorage.length; i++) {
+			const key = localStorage.key(i);
+			if (key && key.startsWith(CACHE_PREFIX)) {
+				localStorage.removeItem(key);
+			}
+		}
+	} catch (e) {
+		console.error("Error clearing all caches:", e);
+	}
 }

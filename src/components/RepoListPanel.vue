@@ -17,30 +17,33 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, watch } from 'vue';
+import { ref, defineProps, defineEmits, watch } from "vue";
 
 const props = defineProps({
-  repos: {
-    type: Array,
-    default: () => []
-  },
-  isOpen: {
-    type: Boolean,
-    default: true
-  }
+	repos: {
+		type: Array,
+		default: () => [],
+	},
+	isOpen: {
+		type: Boolean,
+		default: true,
+	},
 });
 
-const emit = defineEmits(['update:isOpen']);
+const emit = defineEmits(["update:isOpen"]);
 
 const localIsOpen = ref(props.isOpen);
 
-watch(() => props.isOpen, (newVal) => {
-  localIsOpen.value = newVal;
-});
+watch(
+	() => props.isOpen,
+	(newVal) => {
+		localIsOpen.value = newVal;
+	},
+);
 
 const togglePanel = () => {
-  localIsOpen.value = !localIsOpen.value;
-  emit('update:isOpen', localIsOpen.value);
+	localIsOpen.value = !localIsOpen.value;
+	emit("update:isOpen", localIsOpen.value);
 };
 </script>
 
