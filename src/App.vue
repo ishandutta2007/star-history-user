@@ -32,9 +32,10 @@ watch(username, (newUsername) => {
   localStorage.setItem('github_username', newUsername);
 });
 
-const headers = {
-  'Authorization': `token ${GITHUB_TOKEN}`,
-};
+const headers = {};
+if (window.location.hostname === 'localhost') {
+  headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+}
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
