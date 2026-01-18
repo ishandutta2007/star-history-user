@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
 import { Chart, registerables } from "chart.js";
-import { GITHUB_TOKEN } from "./github_token.js";
+import { computed, onMounted, ref, watch } from "vue";
 import RepoListPanel from "./components/RepoListPanel.vue"; // Import the new component
+import { GITHUB_TOKEN } from "./github_token.js";
 import { generateCacheKey, getCache, saveCache } from "./utils/cache"; // Import caching utilities
 
 Chart.register(...registerables);
@@ -76,7 +76,7 @@ const getStarHistory = async () => {
 	try {
 		let allRepos = [];
 		const repoListCacheKey = generateCacheKey("repos", username.value);
-		let cachedAllRepos = getCache(repoListCacheKey, 15);
+		const cachedAllRepos = getCache(repoListCacheKey, 15);
 
 		if (cachedAllRepos) {
 			allRepos = cachedAllRepos;
@@ -121,12 +121,12 @@ const getStarHistory = async () => {
 
 		let allStars = [];
 		let repoctr = 0;
-		let newrepolen = slicedTopRepos.length;
+		const newrepolen = slicedTopRepos.length;
 
 		for (const repo of slicedTopRepos) {
 			repoctr++;
 			const stargazerCacheKey = generateCacheKey("stargazers", repo.full_name);
-			let cachedRepoStars = getCache(stargazerCacheKey, 15);
+			const cachedRepoStars = getCache(stargazerCacheKey, 15);
 
 			if (cachedRepoStars) {
 				allStars = allStars.concat(cachedRepoStars);
@@ -138,7 +138,7 @@ const getStarHistory = async () => {
 				let starsForThisRepo = [];
 				let starsPage = 1;
 				let stars;
-				let totalNoOfPagesOfRepo = Math.ceil(
+				const totalNoOfPagesOfRepo = Math.ceil(
 					repo.stargazers_count / N_stargazers_per_page,
 				); // Calculate total pages based on stargazers_count
 
