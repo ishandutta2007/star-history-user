@@ -15,6 +15,7 @@ const error = ref(null);
 const message = ref('');
 const topRepos = ref([]); // New ref to store top repositories
 const N_repo = 100;
+const N_repo_gh = 10;
 const N_repos_per_page = 100;
 const N_stargazers_per_page = 100;
 const isPanelOpen = ref(true); // Track panel open state
@@ -99,7 +100,7 @@ const getStarHistory = async () => {
     }
 
     allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
-    const slicedTopRepos = allRepos.slice(0, N_repo); // Take top N_repo repos
+    const slicedTopRepos = allRepos.slice(0, window.location.hostname === 'localhost'?N_repo:N_repo_gh); // Take top N_repo repos
     topRepos.value = slicedTopRepos; // Populate the ref
 
     let allStars = [];
