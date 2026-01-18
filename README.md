@@ -34,6 +34,14 @@ Ever wondered how a GitHub user's popularity has grown over time? This tool lets
 
 ## 🔧 Project Setup
 
+Create a .env file in project root with following
+```
+VITE_GITHUB_TOKEN=<Your-github-access-token>
+```
+
+to generate github acces token follow [this](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+
+
 ```sh
 npm install
 ```
