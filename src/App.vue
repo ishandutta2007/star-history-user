@@ -163,25 +163,25 @@ const getStarHistory = async () => {
 					}
 					if (stars.message) throw new Error(stars.message);
 					starsForThisRepo = starsForThisRepo.concat(stars);
-					if (totalNoOfPagesOfRepo>=200) {
-						if (starsPage+3<=totalNoOfPagesOfRepo) {
+					if (totalNoOfPagesOfRepo >= 200) {
+						if (starsPage + 3 <= totalNoOfPagesOfRepo) {
 							starsForThisRepo = starsForThisRepo.concat(stars);
 							starsForThisRepo = starsForThisRepo.concat(stars);
-							starsPage+=3;
-						} else if (starsPage+2<=totalNoOfPagesOfRepo) {
+							starsPage += 3;
+						} else if (starsPage + 2 <= totalNoOfPagesOfRepo) {
 							starsForThisRepo = starsForThisRepo.concat(stars);
-							starsPage+=2;
+							starsPage += 2;
 						}
-					} else if (totalNoOfPagesOfRepo>=100) {
-						if (starsPage+2<=totalNoOfPagesOfRepo) {
+					} else if (totalNoOfPagesOfRepo >= 100) {
+						if (starsPage + 2 <= totalNoOfPagesOfRepo) {
 							starsForThisRepo = starsForThisRepo.concat(stars);
-							starsPage+=2;
+							starsPage += 2;
 						}
 					} else {
 						starsPage++;
 					}
 				} while (stars.length === N_stargazers_per_page);
-				console.log(repo.name, starsForThisRepo.length)
+				console.log(repo.name, starsForThisRepo.length);
 				saveCache(stargazerCacheKey, starsForThisRepo);
 				allStars = allStars.concat(starsForThisRepo);
 				console.log(`Stars for ${repo.name} saved to cache.`);
