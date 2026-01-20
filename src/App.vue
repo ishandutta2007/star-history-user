@@ -19,7 +19,7 @@ const N_repo_gh = 10;
 const N_repos_per_page = 100;
 const N_stargazers_per_page = 100;
 const isPanelOpen = ref(true); // Track panel open state
-
+const Github_req_limit = 60;
 // Load username from localStorage
 onMounted(() => {
 	const savedUsername = localStorage.getItem("github_username");
@@ -163,7 +163,7 @@ const getStarHistory = async () => {
 					}
 					if (stars.message) throw new Error(stars.message);
 					starsForThisRepo = starsForThisRepo.concat(stars);
-					if (totalNoOfPagesOfRepo >= 200) {
+					if (totalNoOfPagesOfRepo >= Github_req_limit / 2) {
 						if (starsPage + 3 <= totalNoOfPagesOfRepo) {
 							starsForThisRepo = starsForThisRepo.concat(stars);
 							starsForThisRepo = starsForThisRepo.concat(stars);
@@ -172,7 +172,7 @@ const getStarHistory = async () => {
 							starsForThisRepo = starsForThisRepo.concat(stars);
 							starsPage += 2;
 						}
-					} else if (totalNoOfPagesOfRepo >= 100) {
+					} else if (totalNoOfPagesOfRepo >= Github_req_limit / 4) {
 						if (starsPage + 2 <= totalNoOfPagesOfRepo) {
 							starsForThisRepo = starsForThisRepo.concat(stars);
 							starsPage += 2;
