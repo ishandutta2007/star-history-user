@@ -163,22 +163,26 @@ const getStarHistory = async () => {
 					}
 					if (stars.message) throw new Error(stars.message);
 					starsForThisRepo = starsForThisRepo.concat(stars);
-					if (totalNoOfPagesOfRepo >= Github_req_limit / 2) {
-						if (starsPage + 3 <= totalNoOfPagesOfRepo) {
-							starsForThisRepo = starsForThisRepo.concat(stars);
-							starsForThisRepo = starsForThisRepo.concat(stars);
-							starsPage += 3;
-						} else if (starsPage + 2 <= totalNoOfPagesOfRepo) {
-							starsForThisRepo = starsForThisRepo.concat(stars);
-							starsPage += 2;
-						}
-					} else if (totalNoOfPagesOfRepo >= Github_req_limit / 4) {
-						if (starsPage + 2 <= totalNoOfPagesOfRepo) {
-							starsForThisRepo = starsForThisRepo.concat(stars);
-							starsPage += 2;
-						}
-					} else {
+					if (window.location.hostname === "localhost") {
 						starsPage++;
+					} else {
+						if (totalNoOfPagesOfRepo >= Github_req_limit / 2) {
+							if (starsPage + 3 <= totalNoOfPagesOfRepo) {
+								starsForThisRepo = starsForThisRepo.concat(stars);
+								starsForThisRepo = starsForThisRepo.concat(stars);
+								starsPage += 3;
+							} else if (starsPage + 2 <= totalNoOfPagesOfRepo) {
+								starsForThisRepo = starsForThisRepo.concat(stars);
+								starsPage += 2;
+							}
+						} else if (totalNoOfPagesOfRepo >= Github_req_limit / 4) {
+							if (starsPage + 2 <= totalNoOfPagesOfRepo) {
+								starsForThisRepo = starsForThisRepo.concat(stars);
+								starsPage += 2;
+							}
+						} else {
+							starsPage++;
+						}
 					}
 				} while (stars.length === N_stargazers_per_page);
 				console.log(repo.name, starsForThisRepo.length);
