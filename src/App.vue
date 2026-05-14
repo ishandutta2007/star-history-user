@@ -234,7 +234,13 @@ onMounted(async () => {
 <template>
   <div id="app">
     <div class="main-content" :style="{ 'margin-right': mainContentMarginRight }">
-      <h1>GitHub User Star History</h1>
+      <header class="header">
+        <h1>GitHub User Star History</h1>
+        <div class="github-buttons">
+          <iframe src="https://ghbtns.com/github-btn.html?user=ishandutta2007&repo=star-history-user&type=star&count=true&size=large" frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
+          <iframe src="https://ghbtns.com/github-btn.html?user=ishandutta2007&type=follow&count=true&size=large" frameborder="0" scrolling="0" width="230" height="30" title="GitHub"></iframe>
+        </div>
+      </header>
       <form @submit.prevent="getStarHistory">
         <input type="text" v-model="username" placeholder="Enter a GitHub username" />
         <button type="submit" :disabled="loading">{{ loading ? 'Loading...' : 'Generate Chart' }}</button>
@@ -261,6 +267,25 @@ onMounted(async () => {
   padding: 2rem;
   /* margin-right is now dynamic */
   transition: margin-right 0.3s ease; /* Smooth transition for margin changes */
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.github-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 input {
