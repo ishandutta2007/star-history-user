@@ -20,6 +20,8 @@ const N_repos_per_page = 100;
 const N_stargazers_per_page = 100;
 const isPanelOpen = ref(true); // Track panel open state
 const Github_req_limit = 60;
+const showPopup = ref(false);
+let popupTimeout = null;
 
 // Watch for changes in username and save to localStorage
 watch(username, (newUsername) => {
@@ -42,6 +44,12 @@ const getStarHistory = async () => {
 		error.value = "Please enter a GitHub username.";
 		return;
 	}
+
+	// Clear any existing popup timeout
+	if (popupTimeout) {
+		clearTimeout(popupTimeout);
+	}
+	showPopup.value = false;
 
 	// Update URL parameter
 	const url = new URL(window.location);
@@ -190,6 +198,11 @@ const getStarHistory = async () => {
 		chartInstance.data.labels = chartData.labels;
 		chartInstance.data.datasets[0].data = chartData.data;
 		chartInstance.update();
+
+		// Show popup after 15 seconds
+		popupTimeout = setTimeout(() => {
+			showPopup.value = true;
+		}, 15000);
 	} catch (e) {
 		error.value = e.message;
 	} finally {
@@ -250,6 +263,19 @@ onMounted(async () => {
       <canvas ref="chartCanvas"></canvas>
     </div>
     <RepoListPanel :repos="topRepos" v-model:isOpen="isPanelOpen" />
+
+    <!-- Support Popup -->
+    <div v-if="showPopup" class="popup-overlay" @click.self="showPopup = false">
+      <div class="popup-content">
+        <button class="close-btn" @click="showPopup = false">&times;</button>
+        <h2>Support this project!</h2>
+        <p>If you like this tool, please consider starring the repo and following the author on GitHub.</p>
+        <div class="github-buttons popup-buttons">
+          <iframe src="https://ghbtns.com/github-btn.html?user=ishandutta2007&repo=star-history-user&type=star&count=true&size=large" frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
+          <iframe src="https://ghbtns.com/github-btn.html?user=ishandutta2007&type=follow&count=true&size=large" frameborder="0" scrolling="0" width="230" height="30" title="GitHub"></iframe>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -335,5 +361,62 @@ canvas {
 .error {
   color: red;
   margin-top: 1rem;
+}
+
+/* Popup Styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.popup-content {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  position: relative;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.popup-content h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.popup-content p {
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.popup-buttons {
+  justify-content: center;
 }
 </style>
