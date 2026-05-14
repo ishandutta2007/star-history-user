@@ -20,13 +20,6 @@ const N_repos_per_page = 100;
 const N_stargazers_per_page = 100;
 const isPanelOpen = ref(true); // Track panel open state
 const Github_req_limit = 60;
-// Load username from localStorage
-onMounted(() => {
-	const savedUsername = localStorage.getItem("github_username");
-	if (savedUsername) {
-		username.value = savedUsername;
-	}
-});
 
 // Watch for changes in username and save to localStorage
 watch(username, (newUsername) => {
@@ -44,30 +37,16 @@ const mainContentMarginRight = computed(() => {
 	return isPanelOpen.value ? "250px" : "50px"; // Panel width: 250px open, 50px collapsed
 });
 
-onMounted(() => {
-	const ctx = chartCanvas.value.getContext("2d");
-	chartInstance = new Chart(ctx, {
-		type: "line",
-		data: {
-			labels: [],
-			datasets: [
-				{
-					label: "Total Stars",
-					data: [],
-					fill: false,
-					borderColor: "rgb(75, 192, 192)",
-					tension: 0.1,
-				},
-			],
-		},
-	});
-});
-
 const getStarHistory = async () => {
 	if (!username.value) {
 		error.value = "Please enter a GitHub username.";
 		return;
 	}
+
+	// Update URL parameter
+	const url = new URL(window.location);
+	url.searchParams.set("user", username.value);
+	window.history.pushState({}, "", url);
 
 	loading.value = true;
 	error.value = null;
@@ -218,6 +197,38 @@ const getStarHistory = async () => {
 		message.value = "";
 	}
 };
+
+// Load username from localStorage or URL parameter
+onMounted(async () => {
+	const ctx = chartCanvas.value.getContext("2d");
+	chartInstance = new Chart(ctx, {
+		type: "line",
+		data: {
+			labels: [],
+			datasets: [
+				{
+					label: "Total Stars",
+					data: [],
+					fill: false,
+					borderColor: "rgb(75, 192, 192)",
+					tension: 0.1,
+				},
+			],
+		},
+	});
+
+	const urlParams = new URLSearchParams(window.location.search);
+	const userParam = urlParams.get("user");
+	if (userParam) {
+		username.value = userParam;
+		await getStarHistory();
+	} else {
+		const savedUsername = localStorage.getItem("github_username");
+		if (savedUsername) {
+			username.value = savedUsername;
+		}
+	}
+});
 </script>
 
 <template>
