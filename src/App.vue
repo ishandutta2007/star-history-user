@@ -30,7 +30,7 @@ watch(username, (newUsername) => {
 
 const headers = {};
 if (window.location.hostname === "localhost") {
-	headers["Authorization"] = `token ${GITHUB_TOKEN}`;
+	headers["Authorization"] = `Bearer ${GITHUB_TOKEN}`;
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
