@@ -29,7 +29,7 @@ watch(username, (newUsername) => {
 });
 
 const headers = {};
-if (window.location.hostname === "localhost") {
+if (GITHUB_TOKEN) {
 	headers["Authorization"] = `Bearer ${GITHUB_TOKEN}`;
 }
 
@@ -102,8 +102,8 @@ const getStarHistory = async () => {
 		allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
 		const slicedTopRepos = allRepos.slice(
 			0,
-			window.location.hostname === "localhost" ? N_repo : N_repo_gh,
-		); // Take top N_repo repos
+			GITHUB_TOKEN ? N_repo : N_repo_gh,
+		); // Take top N_repo repos if token exists, else N_repo_gh
 		topRepos.value = slicedTopRepos; // Populate the ref
 
 		let allStars = [];
@@ -150,7 +150,7 @@ const getStarHistory = async () => {
 					}
 					if (stars.message) throw new Error(stars.message);
 					starsForThisRepo = starsForThisRepo.concat(stars);
-					if (window.location.hostname === "localhost") {
+					if (GITHUB_TOKEN) {
 						starsPage++;
 					} else {
 						if (totalNoOfPagesOfRepo >= Github_req_limit / 2) {
