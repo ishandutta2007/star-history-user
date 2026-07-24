@@ -5,3 +5,6 @@
 __pycache__/*
 contributors.txt
 temp_repo_clone
+.vscode
+dist/
+node_modules/
