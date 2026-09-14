@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117" />
+      <stop offset="50%" stop-color="#161b22" />
+      <stop offset="100%" stop-color="#090d16" />
+    </linearGradient>
+
+    <!-- Glowing Accent Gradients -->
+    <linearGradient id="accent-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff7b72" />
+      <stop offset="50%" stop-color="#d2a8ff" />
+      <stop offset="100%" stop-color="#79c0ff" />
+    </linearGradient>
+
+    <linearGradient id="star-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e3b341" />
+      <stop offset="100%" stop-color="#f2e088" />
+    </linearGradient>
+
+    <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#58a6ff" stop-opacity="0.2" />
+      <stop offset="50%" stop-color="#bc8cff" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#58a6ff" stop-opacity="0.3" />
+    </linearGradient>
+
+    <linearGradient id="area-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#bc8cff" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#bc8cff" stop-opacity="0.0" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    
+    <filter id="soft-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <style>
+    .title {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 800;
+      font-size: 46px;
+      fill: #ffffff;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      font-size: 20px;
+      fill: #8b949e;
+    }
+    .grid-line {
+      stroke: #30363d;
+      stroke-dasharray: 4 4;
+      stroke-width: 1;
+    }
+    
+    /* CSS Animations for Dynamic Aspect */
+    @keyframes pulse-star {
+      0% { transform: scale(1) rotate(0deg); opacity: 0.9; }
+      50% { transform: scale(1.15) rotate(15deg); opacity: 1; filter: drop-shadow(0 0 12px #e3b341); }
+      100% { transform: scale(1) rotate(0deg); opacity: 0.9; }
+    }
+
+    @keyframes float-item {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes draw-line {
+      0% { stroke-dashoffset: 1000; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    @keyframes shimmer {
+      0% { stop-color: #ff7b72; }
+      33% { stop-color: #d2a8ff; }
+      66% { stop-color: #79c0ff; }
+      100% { stop-color: #ff7b72; }
+    }
+
+    @keyframes twinjle-bg {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    .animated-star {
+      transform-origin: center;
+      animation: pulse-star 3s ease-in-out infinite;
+    }
+
+    .floating-group {
+      animation: float-item 4s ease-in-out infinite;
+    }
+
+    .chart-line {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 0;
+      animation: draw-line 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .bg-star {
+      animation: twinjle-bg 2.5s ease-in-out infinite alternate;
+    }
+  </style>
+
+  <!-- Base Card Background -->
+  <rect width="1200" height="300" rx="16" fill="url(#bg-grad)" stroke="#30363d" stroke-width="2" />
+
+  <!-- Decorative Top Bar -->
+  <rect width="1200" height="6" rx="3" fill="url(#accent-grad)" />
+
+  <!-- Background Grid Pattern -->
+  <g opacity="0.4">
+    <line x1="100" y1="80" x2="1100" y2="80" class="grid-line" />
+    <line x1="100" y1="140" x2="1100" y2="140" class="grid-line" />
+    <line x1="100" y1="200" x2="1100" y2="200" class="grid-line" />
+    <line x1="100" y1="260" x2="1100" y2="260" class="grid-line" />
+  </g>
+
+  <!-- Ambient Twinkling Stars in Background -->
+  <g class="bg-star" fill="#e3b341">
+    <circle cx="150" cy="70" r="1.5" opacity="0.5" />
+    <circle cx="350" cy="190" r="1" opacity="0.7" />
+    <circle cx="580" cy="60" r="2" opacity="0.4" />
+    <circle cx="750" cy="120" r="1.5" opacity="0.6" />
+    <circle cx="980" cy="80" r="1" opacity="0.8" />
+    <circle cx="1080" cy="220" r="2" opacity="0.5" />
+  </g>
+
+  <!-- Dynamic Area & Chart Line Visualization (Background Graphic) -->
+  <g opacity="0.85">
+    <!-- Area Under Curve -->
+    <path d="M 600 240 
+             C 680 230, 720 180, 780 170 
+             C 840 160, 890 120, 950 100 
+             C 1010 80, 1060 65, 1100 50 
+             L 1100 260 L 600 260 Z" 
+          fill="url(#area-grad)" />
+
+    <!-- Trend Line -->
+    <path class="chart-line" 
+          d="M 600 240 
+             C 680 230, 720 180, 780 170 
+             C 840 160, 890 120, 950 100 
+             C 1010 80, 1060 65, 1100 50" 
+          fill="none" 
+          stroke="url(#accent-grad)" 
+          stroke-width="4" 
+          stroke-linecap="round" 
+          filter="url(#soft-glow)" />
+
+    <!-- Data Node Points -->
+    <circle cx="600" cy="240" r="4" fill="#58a6ff" />
+    <circle cx="780" cy="170" r="4" fill="#bc8cff" />
+    <circle cx="950" cy="100" r="4" fill="#d2a8ff" />
+    <circle cx="1100" cy="50" r="6" fill="#ff7b72" filter="url(#soft-glow)" />
+  </g>
+
+  <!-- Main Content Group (Floating Header / Text) -->
+  <g class="floating-group">
+    <!-- Big Glowing Star Icon -->
+    <g transform="translate(80, 82)">
+      <path class="animated-star" 
+            d="M 30 0 L 39.18 18.6 59.76 21.6 44.88 36.1 48.39 56.6 30 46.9 11.61 56.6 15.12 36.1 0.24 21.6 20.82 18.6 Z" 
+            fill="url(#star-grad)" 
+            filter="url(#glow)" />
+    </g>
+
+    <!-- Text Header -->
+    <text x="160" y="115" class="title">
+      GitHub User Star History
+    </text>
+    
+    <text x="160" y="155" class="subtitle">
+      Track &amp; visualize aggregated star growth across all public repositories
+    </text>
+
+    <!-- Tech Badges / Pills -->
+    <g transform="translate(160, 185)">
+      <!-- Badge 1: Vue.js -->
+      <rect width="90" height="28" rx="14" fill="#238636" fill-opacity="0.2" stroke="#2ea043" stroke-width="1"/>
+      <text x="45" y="18" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto" font-size="12" font-weight="600" fill="#3fb950" text-anchor="middle">Vue 3</text>
+
+      <!-- Badge 2: Chart.js -->
+      <rect x="100" width="100" height="28" rx="14" fill="#8957e5" fill-opacity="0.2" stroke="#a371f7" stroke-width="1"/>
+      <text x="150" y="18" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto" font-size="12" font-weight="600" fill="#d2a8ff" text-anchor="middle">Chart.js</text>
+
+      <!-- Badge 3: Vite -->
+      <rect x="210" width="80" height="28" rx="14" fill="#388bfd" fill-opacity="0.2" stroke="#58a6ff" stroke-width="1"/>
+      <text x="250" y="18" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto" font-size="12" font-weight="600" fill="#79c0ff" text-anchor="middle">Vite</text>
+
+      <!-- Badge 4: Dynamic SVG -->
+      <rect x="300" width="115" height="28" rx="14" fill="#f0883e" fill-opacity="0.2" stroke="#f0883e" stroke-width="1"/>
+      <text x="357" y="18" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto" font-size="12" font-weight="600" fill="#f0883e" text-anchor="middle">Interactive</text>
+    </g>
+  </g>
+
+</svg>
