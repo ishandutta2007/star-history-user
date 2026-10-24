@@ -20,8 +20,6 @@ jobs:
       - run: npm install
 
       - run: npm run build
-        env:
-          VITE_GITHUB_TOKEN: ${{ vars.VITE_GITHUB_TOKEN }}
 
       - uses: peaceiris/actions-gh-pages@v3
         with:

@@ -16,13 +16,13 @@
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ishandutta2007/star-history-user&type=date&legend=top-left)](https://www.star-history.com/#ishandutta2007/star-history-user&type=date&legend=top-left)
 
-Ever wondered how a GitHub user's popularity has grown over time? This tool lets you generate and embed a chart of the aggregated star history of all public repositories for a given GitHub user. 🚀⭐📈
+Ever wondered how a GitHub user's popularity has grown over time? This tool charts the **public aggregate** star history of their most-starred repositories. Choose 10, 25, 50, or 100 repositories, subject to GitHub's anonymous API quota. 🚀⭐📈
 
 **[➡️ Live Demo](https://ishandutta2007.github.io/star-history-user/)** 🌐✨
 
 ## 🎨 Features ✨
 
-*   **📈 User-Level Star History:** Generate a chart of the total stars for a GitHub user, aggregated across all their public repos. 🌟
+*   **📈 User-Level Star History:** Chart daily aggregate history for up to 100 public repositories, automatically identifying partial coverage when rate limits intervene. 🌟
 *   **📊 Beautiful Charts:** Uses Chart.js to render a clean and beautiful line chart. 🎨
 *   **💻 Embeddable:** The generated chart can be embedded anywhere. 🔗
 *   **🚀 Fast & Lightweight:** Built with Vue.js and Vite for a fast and smooth user experience. ⚡
@@ -44,12 +44,9 @@ Ever wondered how a GitHub user's popularity has grown over time? This tool lets
 
 ## 🔧 Project Setup 🚀
 
-Create a `.env` file in project root with following 📝:
-```
-VITE_GITHUB_TOKEN=<Your-github-access-token>
-```
+No personal access token is needed. The static app uses the public [repository star-history API](https://docs.github.com/en/rest/activity/starring#get-repository-star-history) with weekly totals and seven Sunday-first day counts; it does **not** list individual stargazers. Historical daily buckets are labeled by approximate dates: GitHub does not guarantee UTC-aligned boundaries, and cumulative historical star events can differ from today's current star totals (e.g. stars removed later).
 
-To generate GitHub access token follow [this guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) 🔑.
+Unauthenticated calls are limited to 60 requests per hour per IP. This app reserves five calls, caches complete repository histories for one day, offers 10/25/50/100 repository selection, and explicitly labels partial results when the request budget or API's 100-page history cap is reached. Only **complete** repository histories appear in the graph and side panel; the cap is not bypassed. Never put secrets in `VITE_*` variables: Vite embeds them in client bundles.
 
 
 ```sh

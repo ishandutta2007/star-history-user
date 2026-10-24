@@ -2,8 +2,7 @@
 import { Chart, registerables } from "chart.js";
 import { computed, onMounted, ref, watch } from "vue";
 import RepoListPanel from "./components/RepoListPanel.vue"; // Import the new component
-import { GITHUB_TOKEN } from "./github_token.js";
-import { generateCacheKey, getCache, saveCache } from "./utils/cache"; // Import caching utilities
+import { loadUserStarHistory } from "./utils/githubHistory.js";
 
 Chart.register(...registerables);
 
@@ -13,13 +12,10 @@ let chartInstance = null;
 const loading = ref(false);
 const error = ref(null);
 const message = ref("");
-const topRepos = ref([]); // New ref to store top repositories
-const N_repo = 100;
-const N_repo_gh = 10;
-const N_repos_per_page = 100;
-const N_stargazers_per_page = 100;
+const topRepos = ref([]);
+const maxRepos = ref(10);
+const notices = ref([]);
 const isPanelOpen = ref(true); // Track panel open state
-const Github_req_limit = 60;
 const showPopup = ref(false);
 let popupTimeout = null;
 
@@ -28,187 +24,58 @@ watch(username, (newUsername) => {
 	localStorage.setItem("github_username", newUsername);
 });
 
-const headers = {};
-if (GITHUB_TOKEN) {
-	headers["Authorization"] = `Bearer ${GITHUB_TOKEN}`;
-}
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 const mainContentMarginRight = computed(() => {
 	return isPanelOpen.value ? "250px" : "50px"; // Panel width: 250px open, 50px collapsed
 });
 
 const getStarHistory = async () => {
-	if (!username.value) {
-		error.value = "Please enter a GitHub username.";
-		return;
-	}
+  if (loading.value) return;
 
-	// Clear any existing popup timeout
-	if (popupTimeout) {
-		clearTimeout(popupTimeout);
-	}
-	showPopup.value = false;
+  // Clear any pending popup and stale history before starting another request.
+  if (popupTimeout) clearTimeout(popupTimeout);
+  showPopup.value = false;
+  loading.value = true;
+  error.value = null;
+  message.value = "";
+  notices.value = [];
+  topRepos.value = [];
+  chartInstance.data.labels = [];
+  chartInstance.data.datasets[0].data = [];
+  chartInstance.update();
 
-	// Update URL parameter
-	const url = new URL(window.location);
-	url.searchParams.set("user", username.value);
-	window.history.pushState({}, "", url);
+  try {
+    const selectedUser = username.value.trim();
+    const result = await loadUserStarHistory({
+      username: selectedUser,
+      maxRepos: maxRepos.value,
+      onProgress: (progress) => { message.value = progress; },
+    });
 
-	loading.value = true;
-	error.value = null;
-	topRepos.value = []; // Clear previous repos
+    topRepos.value = result.repos;
+    chartInstance.data.labels = result.chart.labels;
+    chartInstance.data.datasets[0].data = result.chart.data;
+    chartInstance.update();
 
-	try {
-		let allRepos = [];
-		const repoListCacheKey = generateCacheKey("repos", username.value);
-		const cachedAllRepos = getCache(repoListCacheKey, 15);
+    notices.value = [...result.notices];
+    if (result.partial) {
+      notices.value.unshift(
+        `Partial coverage: ${result.repos.length} of ${result.requested} repositories included. Only completed histories are shown.`,
+      );
+    }
+    if (result.chart.labels.length === 0) {
+      notices.value.push("No star history was available for the completed repositories.");
+    }
 
-		if (cachedAllRepos) {
-			allRepos = cachedAllRepos;
-			message.value = "Repositories loaded from cache.";
-			console.log(
-				`${allRepos.length} Repositories loaded from cache:`,
-				allRepos,
-			);
-		} else {
-			message.value = `Fetching Repositories for user=${username.value} via API...`;
-			console.log("Fetching Repositories via API...");
-			let page = 1;
-			let repos;
-			do {
-				const res = await fetch(
-					`https://api.github.com/users/${username.value}/repos?page=${page}&per_page=${N_repos_per_page}`,
-					{ headers },
-				);
-				repos = await res.json();
-				if (
-					repos.message &&
-					repos.message.includes("API rate limit exceeded")
-				) {
-					throw new Error(repos.message);
-				}
-				if (repos.message) throw new Error(repos.message);
-				allRepos = allRepos.concat(repos);
-				page++;
-			} while (repos.length === N_repos_per_page);
-			saveCache(repoListCacheKey, allRepos);
-			console.log(
-				`Top ${repos.length} Repositories of ${username.value} saved to cache.`,
-			);
-		}
-
-		allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
-		const slicedTopRepos = allRepos.slice(
-			0,
-			GITHUB_TOKEN ? N_repo : N_repo_gh,
-		); // Take top N_repo repos if token exists, else N_repo_gh
-		topRepos.value = slicedTopRepos; // Populate the ref
-
-		let allStars = [];
-		let repoctr = 0;
-		const newrepolen = slicedTopRepos.length;
-
-		for (const repo of slicedTopRepos) {
-			repoctr++;
-			const stargazerCacheKey = generateCacheKey("stargazers", repo.full_name);
-			const cachedRepoStars = getCache(stargazerCacheKey, 15);
-
-			if (cachedRepoStars) {
-				allStars = allStars.concat(cachedRepoStars);
-				message.value = `Stars for ${username.value}/${repo.name} loaded from cache [${repoctr}/${newrepolen}] ...`;
-				console.log(`Stars for ${repo.name} loaded from cache.`);
-			} else {
-				message.value = `Fetching stars history for ${username.value}/${repo.name} via API [${repoctr}/${newrepolen}] ...`;
-				console.log(`Fetching stars for ${repo.name} via API.`);
-				let starsForThisRepo = [];
-				let starsPage = 1;
-				let stars;
-				const totalNoOfPagesOfRepo = Math.ceil(
-					repo.stargazers_count / N_stargazers_per_page,
-				); // Calculate total pages based on stargazers_count
-
-				do {
-					message.value = `Fetching stars history for ${username.value}/${repo.name} via API [repo=${repoctr}/${newrepolen}][page=${starsPage}${totalNoOfPagesOfRepo > 1 ? "/" + totalNoOfPagesOfRepo : ""}] ...`;
-					const res = await fetch(
-						`${repo.stargazers_url}?page=${starsPage}&per_page=${N_stargazers_per_page}`,
-						{
-							headers: {
-								...headers,
-								Accept: "application/vnd.github.v3.star+json",
-							},
-						},
-					);
-
-					stars = await res.json();
-					if (
-						stars.message &&
-						stars.message.includes("API rate limit exceeded")
-					) {
-						throw new Error(stars.message);
-					}
-					if (stars.message) throw new Error(stars.message);
-					starsForThisRepo = starsForThisRepo.concat(stars);
-					if (GITHUB_TOKEN) {
-						starsPage++;
-					} else {
-						if (totalNoOfPagesOfRepo >= Github_req_limit / 2) {
-							if (starsPage + 3 <= totalNoOfPagesOfRepo) {
-								starsForThisRepo = starsForThisRepo.concat(stars);
-								starsForThisRepo = starsForThisRepo.concat(stars);
-								starsPage += 3;
-							} else if (starsPage + 2 <= totalNoOfPagesOfRepo) {
-								starsForThisRepo = starsForThisRepo.concat(stars);
-								starsPage += 2;
-							}
-						} else if (totalNoOfPagesOfRepo >= Github_req_limit / 4) {
-							if (starsPage + 2 <= totalNoOfPagesOfRepo) {
-								starsForThisRepo = starsForThisRepo.concat(stars);
-								starsPage += 2;
-							}
-						} else {
-							starsPage++;
-						}
-					}
-				} while (stars.length === N_stargazers_per_page);
-				console.log(repo.name, starsForThisRepo.length);
-				saveCache(stargazerCacheKey, starsForThisRepo);
-				allStars = allStars.concat(starsForThisRepo);
-				console.log(`Stars for ${repo.name} saved to cache.`);
-			}
-		}
-
-		allStars.sort((a, b) => new Date(a.starred_at) - new Date(b.starred_at));
-
-		const chartData = allStars.reduce(
-			(acc, star, index) => {
-				const date = new Date(star.starred_at).toLocaleDateString();
-				if (!acc.labels.includes(date)) {
-					acc.labels.push(date);
-					acc.data.push(index + 1);
-				} else {
-					acc.data[acc.data.length - 1] = index + 1;
-				}
-				return acc;
-			},
-			{ labels: [], data: [] },
-		);
-
-		chartInstance.data.labels = chartData.labels;
-		chartInstance.data.datasets[0].data = chartData.data;
-		chartInstance.update();
-
-		// Show popup after 15 seconds
-		popupTimeout = setTimeout(() => {
-			showPopup.value = true;
-		}, 15000);
-	} catch (e) {
-		error.value = e.message;
-	} finally {
-		loading.value = false;
-		message.value = "";
-	}
+    const url = new URL(window.location);
+    url.searchParams.set("user", selectedUser);
+    window.history.pushState({}, "", url);
+    popupTimeout = setTimeout(() => { showPopup.value = true; }, 15000);
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e);
+  } finally {
+    loading.value = false;
+    message.value = "";
+  }
 };
 
 // Load username from localStorage or URL parameter
@@ -256,10 +123,21 @@ onMounted(async () => {
       </header>
       <form @submit.prevent="getStarHistory">
         <input type="text" v-model="username" placeholder="Enter a GitHub username" />
+        <label for="repoLimit">Top repositories:</label>
+        <select id="repoLimit" v-model.number="maxRepos" :disabled="loading">
+          <option :value="10">10</option>
+          <option :value="25">25</option>
+          <option :value="50">50</option>
+          <option :value="100">100</option>
+        </select>
         <button type="submit" :disabled="loading">{{ loading ? 'Loading...' : 'Generate Chart' }}</button>
       </form>
       <div v-if="error" class="error">{{ error }}</div>
       <div v-if="message">{{ message }}</div>
+      <ul v-if="notices.length" class="notices" aria-live="polite">
+        <li v-for="notice in notices" :key="notice">{{ notice }}</li>
+      </ul>
+      <p class="data-note">History uses GitHub weekly aggregates. Day boundaries are approximate, and historical events may differ from currently starred totals.</p>
       <canvas ref="chartCanvas"></canvas>
     </div>
     <RepoListPanel :repos="topRepos" v-model:isOpen="isPanelOpen" />
@@ -352,6 +230,24 @@ button:disabled {
   background-color: #cccccc; /* Grey background when disabled */
   cursor: not-allowed; /* Not-allowed cursor */
   box-shadow: none;
+}
+
+select {
+  margin: 0.5rem 0.75rem 0.5rem 0.25rem;
+  padding: 0.65rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+}
+
+.notices {
+  text-align: left;
+  color: #6d4200;
+}
+
+.data-note {
+  color: #555;
+  font-size: 0.85rem;
 }
 
 canvas {
